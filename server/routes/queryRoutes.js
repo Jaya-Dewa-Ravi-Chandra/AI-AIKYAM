@@ -4,7 +4,10 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const { email, query } = req.body || {};
+    const body = req.body || {};
+
+    const email = body.email;
+    const query = body.query;
 
     const validEmail =
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -15,7 +18,11 @@ router.post("/", async (req, res) => {
       });
     }
 
-    if (!query || query.trim().length < 5) {
+    if (
+      !query ||
+      typeof query !== "string" ||
+      query.trim().length < 5
+    ) {
       return res.status(400).json({
         message: "Please provide a longer query.",
       });
