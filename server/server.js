@@ -103,8 +103,7 @@ async function initializeDatabase() {
         amount INTEGER
           NOT NULL,
 
-        transaction_id VARCHAR(100)
-          UNIQUE,
+        transaction_id VARCHAR(100),
 
         payment_status VARCHAR(30)
           DEFAULT 'pending',
@@ -123,17 +122,6 @@ async function initializeDatabase() {
       ALTER TABLE registrations
       ADD COLUMN IF NOT EXISTS transaction_id
       VARCHAR(100);
-    `);
-
-    /* =========================
-       UNIQUE TRANSACTION ID
-    ========================= */
-
-    await pool.query(`
-      CREATE UNIQUE INDEX IF NOT EXISTS
-      registrations_transaction_id_unique
-      ON registrations(transaction_id)
-      WHERE transaction_id IS NOT NULL;
     `);
 
     /* =========================
