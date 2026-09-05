@@ -13,7 +13,7 @@ export default function Chatbot() {
     e.preventDefault();
     setStatus("");
     try {
-      const res = await fetch(`${api}/queries`, {
+      const res = await fetch(`${api}/api/queries`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, query })
