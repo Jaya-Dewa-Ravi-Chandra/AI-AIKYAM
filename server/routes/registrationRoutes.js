@@ -144,12 +144,35 @@ export default function registrationRoutes(pool) {
         });
       }
 
-      const cleanedTransactionId =
-        transactionId.trim();
+const cleanedTransactionId =
+  transactionId.trim();
 
-      // Generate unique registration ID
-      let registrationId;
-      let inserted = false;
+/* =========================
+   CHECK DUPLICATE TRANSACTION ID
+========================= */
+
+const existingTransaction = await pool.query(
+  `
+  SELECT registration_id
+  FROM registrations
+  WHERE transaction_id = $1
+  `,
+  [cleanedTransactionId]
+);
+
+if (existingTransaction.rows.length > 0) {
+  return res.status(409).json({
+    message:
+      "This transaction ID has already been submitted.",
+  });
+}
+
+/* =========================
+   GENERATE REGISTRATION ID
+========================= */
+
+let registrationId;
+let inserted = false;
 
       while (!inserted) {
         registrationId =

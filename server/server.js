@@ -19,6 +19,7 @@ const PORT = process.env.PORT || 5000;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+
   ssl:
     process.env.NODE_ENV === "production"
       ? {
@@ -26,6 +27,8 @@ const pool = new Pool({
         }
       : false,
 });
+
+app.locals.db = pool;
 
 /* =========================
    MIDDLEWARE
@@ -37,8 +40,20 @@ app.use(
       "http://localhost:5173",
       "https://ai-aikyam-u7zk.onrender.com",
     ],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 
@@ -50,49 +65,103 @@ app.use(express.json());
 
 async function initializeDatabase() {
   try {
+    /* =========================
+       REGISTRATIONS TABLE
+    ========================= */
+
     await pool.query(`
       CREATE TABLE IF NOT EXISTS registrations (
         id SERIAL PRIMARY KEY,
 
-        registration_id VARCHAR(50) UNIQUE NOT NULL,
+        registration_id VARCHAR(50)
+          UNIQUE NOT NULL,
 
-        name VARCHAR(150) NOT NULL,
+        name VARCHAR(150)
+          NOT NULL,
 
-        email VARCHAR(255) NOT NULL,
+        email VARCHAR(255)
+          NOT NULL,
 
-        phone VARCHAR(20) NOT NULL,
+        phone VARCHAR(20)
+          NOT NULL,
 
-        institution VARCHAR(255) NOT NULL,
+        institution VARCHAR(255)
+          NOT NULL,
 
-        city VARCHAR(100) NOT NULL,
+        city VARCHAR(100)
+          NOT NULL,
 
-        department VARCHAR(150) NOT NULL,
+        department VARCHAR(150)
+          NOT NULL,
 
-        year_of_study VARCHAR(50) NOT NULL,
+        year_of_study VARCHAR(50)
+          NOT NULL,
 
-        events TEXT[] NOT NULL,
+        events TEXT[]
+          NOT NULL,
 
-        amount INTEGER NOT NULL,
+        amount INTEGER
+          NOT NULL,
 
-        payment_status VARCHAR(30) DEFAULT 'pending',
+        transaction_id VARCHAR(100)
+          UNIQUE,
 
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        payment_status VARCHAR(30)
+          DEFAULT 'pending',
+
+        created_at TIMESTAMP
+          DEFAULT CURRENT_TIMESTAMP
       );
     `);
+
+    /* =========================
+       ADD TRANSACTION ID
+       TO EXISTING TABLES
+    ========================= */
+
+    await pool.query(`
+      ALTER TABLE registrations
+      ADD COLUMN IF NOT EXISTS transaction_id
+      VARCHAR(100);
+    `);
+
+    /* =========================
+       UNIQUE TRANSACTION ID
+    ========================= */
+
+    await pool.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS
+      registrations_transaction_id_unique
+      ON registrations(transaction_id)
+      WHERE transaction_id IS NOT NULL;
+    `);
+
+    /* =========================
+       QUERIES TABLE
+    ========================= */
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS queries (
         id SERIAL PRIMARY KEY,
 
-        email VARCHAR(255) NOT NULL,
+        email VARCHAR(255)
+          NOT NULL,
 
-        query TEXT NOT NULL,
+        query TEXT
+          NOT NULL,
 
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP
+          DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-    console.log("PostgreSQL tables initialized successfully.");
+    console.log(
+      "PostgreSQL tables initialized successfully."
+    );
+
+    console.log(
+      "Transaction ID support enabled."
+    );
   } catch (error) {
     console.error(
       "Database initialization failed:",
@@ -131,8 +200,15 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-app.use("/api/registrations", registrationRoutes(pool));
-app.use("/api/queries", queryRoutes);
+app.use(
+  "/api/registrations",
+  registrationRoutes(pool)
+);
+
+app.use(
+  "/api/queries",
+  queryRoutes
+);
 
 /* =========================
    ERROR HANDLER

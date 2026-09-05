@@ -4,39 +4,45 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const body = req.body || {};
+    // Safely handle missing request body
+    const body = req.body ?? {};
 
-    const email = body.email;
-    const query = body.query;
+    const email =
+      typeof body.email === "string"
+        ? body.email.trim().toLowerCase()
+        : "";
 
+    const query =
+      typeof body.query === "string"
+        ? body.query.trim()
+        : "";
+
+    // Validate email
     const validEmail =
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email || !validEmail.test(email)) {
       return res.status(400).json({
+        success: false,
         message: "Please provide a valid email.",
       });
     }
 
-    if (
-      !query ||
-      typeof query !== "string" ||
-      query.trim().length < 5
-    ) {
+    // Validate query
+    if (query.length < 5) {
       return res.status(400).json({
+        success: false,
         message: "Please provide a longer query.",
       });
     }
 
+    // Save to PostgreSQL
     await req.app.locals.db.query(
       `
       INSERT INTO queries (email, query)
       VALUES ($1, $2)
       `,
-      [
-        email.trim().toLowerCase(),
-        query.trim(),
-      ]
+      [email, query]
     );
 
     return res.status(201).json({
