@@ -711,8 +711,9 @@ textarea {
 }
 
 .pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 15px;
 }
 
@@ -722,6 +723,11 @@ textarea {
   padding: 30px;
   background: #08080b;
   min-height: 430px;
+
+  /* consistent card width */
+  flex: 0 1 280px;
+  width: 280px;
+
   display: flex;
   flex-direction: column;
 }
@@ -1261,4 +1267,448 @@ textarea {
     right: 18px;
     bottom: 86px;
   }
+
+}
+/* =========================
+   REGISTRATION FORM
+========================= */
+
+.registration-form-shell {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #08080b;
+}
+
+.registration-form {
+  padding: 35px;
+  display: grid;
+  gap: 25px;
+}
+
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  font: 11px "DM Mono", monospace;
+  letter-spacing: .12em;
+  color: #aaa;
+}
+
+.form-section-title span {
+  color: var(--hot);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-grid label {
+  display: grid;
+  gap: 8px;
+}
+
+.form-grid label span {
+  font: 9px "DM Mono", monospace;
+  color: #777;
+  letter-spacing: .1em;
+}
+
+.form-grid input,
+.form-grid select {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  outline: none;
+  background: #111115;
+  color: #fff;
+  font-size: 13px;
+  transition: border-color .25s ease;
+}
+
+.form-grid input::placeholder {
+  color: #555;
+}
+
+.form-grid input:focus,
+.form-grid select:focus {
+  border-color: rgba(184, 255, 0, .55);
+}
+
+.form-grid select {
+  cursor: pointer;
+}
+
+.form-grid select option {
+  background: #111115;
+  color: #fff;
+}
+
+
+/* =========================
+   EVENT SELECTION
+========================= */
+
+.event-selection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.event-option {
+  min-height: 100px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  background: #0d0d11;
+  color: #fff;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color .25s ease,
+    background .25s ease,
+    transform .25s ease;
+}
+
+.event-option:hover {
+  border-color: rgba(184, 255, 0, .4);
+  transform: translateY(-2px);
+}
+
+.event-option.selected {
+  border-color: var(--hot);
+  background: rgba(184, 255, 0, .05);
+}
+
+.event-option-check {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border: 1px solid #555;
+  display: grid;
+  place-items: center;
+  color: #050506;
+}
+
+.event-option.selected .event-option-check {
+  background: var(--hot);
+  border-color: var(--hot);
+}
+
+.event-option strong {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+
+.event-option small {
+  display: block;
+  margin-top: 6px;
+  color: #777;
+  font: 9px "DM Mono", monospace;
+}
+
+
+/* =========================
+   FEE
+========================= */
+
+.registration-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: #0c0c10;
+}
+
+.registration-total span,
+.total-amount span {
+  display: block;
+  margin-bottom: 7px;
+  color: #666;
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .1em;
+}
+
+.registration-total strong {
+  font-size: 15px;
+}
+
+.total-amount {
+  text-align: right;
+}
+
+.total-amount strong {
+  font-size: 34px;
+  letter-spacing: -.06em;
+  color: var(--hot);
+}
+
+.discount-note {
+  padding: 14px 16px;
+  border-left: 2px solid var(--hot);
+  background: rgba(184, 255, 0, .035);
+}
+
+.discount-note p {
+  margin: 0;
+  color: #888;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.discount-note strong {
+  color: #fff;
+}
+
+
+/* =========================
+   PAYMENT
+========================= */
+
+.payment-section {
+  display: grid;
+  gap: 18px;
+}
+
+.payment-box {
+  border: 1px solid var(--line);
+  padding: 25px;
+  text-align: center;
+  background: #0c0c10;
+}
+
+.payment-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.payment-info svg {
+  color: var(--hot);
+  flex: 0 0 auto;
+}
+
+.payment-info strong {
+  display: block;
+  font: 10px "DM Mono", monospace;
+  letter-spacing: .1em;
+  color: #aaa;
+}
+
+.payment-amount {
+  margin-top: 5px;
+  font-size: 42px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -.07em;
+  color: #fff;
+}
+
+.payment-info p {
+  margin: 8px 0 0;
+  color: #666;
+  font-size: 11px;
+}
+
+.upi-qr-container {
+  width: 240px;
+  height: 240px;
+  margin: 0 auto;
+  padding: 10px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upi-qr {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.qr-placeholder {
+  color: #777;
+  font: 9px "DM Mono", monospace;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.payment-warning {
+  margin: 18px 0 0;
+  color: #666;
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .05em;
+}
+
+
+/* =========================
+   FORM STATUS
+========================= */
+
+.form-error,
+.form-success {
+  padding: 14px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.form-error {
+  border: 1px solid rgba(255, 77, 103, .4);
+  background: rgba(255, 77, 103, .05);
+  color: #ff7b8c;
+}
+
+.form-success {
+  border: 1px solid rgba(184, 255, 0, .35);
+  background: rgba(184, 255, 0, .04);
+  color: #aaa;
+}
+
+.form-success strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--hot);
+  font-family: "DM Mono", monospace;
+}
+
+
+/* =========================
+   SUBMIT
+========================= */
+
+.registration-submit {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid var(--hot);
+  background: var(--hot);
+  color: #050506;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font: 11px "DM Mono", monospace;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+.registration-submit:hover {
+  background: #fff;
+  border-color: #fff;
+}
+
+.registration-submit:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: registration-spin 1s linear infinite;
+}
+
+@keyframes registration-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================
+   REGISTRATION RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .registration-form {
+    padding: 25px;
+  }
+
+  .event-selection {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .registration-form {
+    padding: 18px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .registration-total {
+    align-items: flex-start;
+  }
+
+  .total-amount strong {
+    font-size: 28px;
+  }
+
+  .upi-qr-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .payment-box {
+    padding: 18px;
+  }
+}
+/* =========================
+   TRANSACTION ID
+========================= */
+
+.transaction-field {
+  width: 100%;
+  margin-top: 25px;
+  text-align: left;
+}
+
+.transaction-field label {
+  display: grid;
+  gap: 8px;
+}
+
+.transaction-field label span {
+  font: 9px "DM Mono", monospace;
+  color: #777;
+  letter-spacing: .1em;
+}
+
+.transaction-field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  outline: none;
+  background: #111115;
+  color: #fff;
+  font-size: 13px;
+  transition: border-color .25s ease;
+}
+
+.transaction-field input::placeholder {
+  color: #555;
+}
+
+.transaction-field input:focus {
+  border-color: rgba(184, 255, 0, .55);
+}
+
+.transaction-field p {
+  margin: 9px 0 0;
+  color: #666;
+  font-size: 10px;
+  line-height: 1.6;
 }

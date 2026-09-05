@@ -1,51 +1,163 @@
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import rateLimit from "express-rate-limit";
+import pg from "pg";
+
+import registrationRoutes from "./routes/registrationRoutes.js";
 import queryRoutes from "./routes/queryRoutes.js";
 
 dotenv.config();
 
+const { Pool } = pg;
+
 const app = express();
 const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
-app.use(cors({
-  origin: CLIENT_URL,
-  methods: ["GET", "POST"],
-  credentials: false
-}));
-app.use(express.json({ limit: "20kb" }));
+/* =========================
+   DATABASE
+========================= */
 
-const queryLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 50,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message: "Too many requests. Please try again later." }
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? {
+          rejectUnauthorized: false,
+        }
+      : false,
 });
 
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, service: "AI AIKYAM API" });
-});
+/* =========================
+   MIDDLEWARE
+========================= */
 
-app.use("/api/queries", queryLimiter, queryRoutes);
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://ai-aikyam-u7zk.onrender.com",
+    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-async function start() {
-  if (!process.env.MONGODB_URI) {
-    console.error("MONGODB_URI is missing. Create server/.env from .env.example.");
-    process.exit(1);
-  }
+app.use(express.json());
 
+/* =========================
+   DATABASE INITIALIZATION
+========================= */
+
+async function initializeDatabase() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("MongoDB connected");
-    app.listen(PORT, () => console.log(`AI AIKYAM API running on http://localhost:${PORT}`));
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS registrations (
+        id SERIAL PRIMARY KEY,
+
+        registration_id VARCHAR(50) UNIQUE NOT NULL,
+
+        name VARCHAR(150) NOT NULL,
+
+        email VARCHAR(255) NOT NULL,
+
+        phone VARCHAR(20) NOT NULL,
+
+        institution VARCHAR(255) NOT NULL,
+
+        city VARCHAR(100) NOT NULL,
+
+        department VARCHAR(150) NOT NULL,
+
+        year_of_study VARCHAR(50) NOT NULL,
+
+        events TEXT[] NOT NULL,
+
+        amount INTEGER NOT NULL,
+
+        payment_status VARCHAR(30) DEFAULT 'pending',
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS queries (
+        id SERIAL PRIMARY KEY,
+
+        email VARCHAR(255) NOT NULL,
+
+        query TEXT NOT NULL,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    console.log("PostgreSQL tables initialized successfully.");
   } catch (error) {
-    console.error("MongoDB connection failed:", error.message);
+    console.error(
+      "Database initialization failed:",
+      error.message
+    );
+
     process.exit(1);
   }
 }
 
-start();
+/* =========================
+   ROUTES
+========================= */
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "AI AIKYAM API is running",
+    status: "online",
+  });
+});
+
+app.get("/api/health", async (req, res) => {
+  try {
+    await pool.query("SELECT NOW()");
+
+    res.json({
+      status: "healthy",
+      database: "connected",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "unhealthy",
+      database: "disconnected",
+      error: error.message,
+    });
+  }
+});
+
+app.use("/api/registrations", registrationRoutes(pool));
+app.use("/api/queries", queryRoutes);
+
+/* =========================
+   ERROR HANDLER
+========================= */
+
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  res.status(500).json({
+    message: "Internal server error",
+  });
+});
+
+/* =========================
+   START SERVER
+========================= */
+
+async function startServer() {
+  await initializeDatabase();
+
+  app.listen(PORT, () => {
+    console.log(
+      `AI AIKYAM server running on port ${PORT}`
+    );
+  });
+}
+
+startServer();

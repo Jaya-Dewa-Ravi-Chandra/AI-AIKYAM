@@ -54,27 +54,20 @@ export const speakers = [
 
 export const pricing = [
   {
-    title: "COMBO",
+    title: "PER HEAD",
     subtitle: "FULL PASS",
     price: "₹ 650",
     note: "Entry For all three events",
     featured: true,
-    bullets: ["AI PRADARSHA", "AI SANKALP", "AI MAHAYUDH"]
+    bullets: ["AI PRADARSHA", "AI SANKALP", "AI MAHAYUDH","COMPLEMENTARY WORKING MEAL","SAVE UPTO 100RS","+ENtry to AI SAMVAD"]
   },
   {
-    title: "AI PRADARSHA",
+    title: "PER HEAD",
     subtitle: "SINGLE PASS",
     price: "₹ 250",
-    note: "Entry for AI PRADARSHA",
-    bullets: ["Project Expo"]
+    note: "Entry for any one event of choice",
+    bullets: ["Any one among these(AI PRADARSHA, AI SANKALP, AI MAHAYUDH","+Entry to AI SAMVAD"]
   },
-  {
-    title: "AI SANKALP",
-    subtitle: "SINGLE PASS",
-    price: "₹ 250",
-    note: "Entry for AI SANKALP",
-    bullets: ["Idea Pitching"]
-  }
 ];
 
 export const coordinators = {
