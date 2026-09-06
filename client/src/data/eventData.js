@@ -59,7 +59,7 @@ export const pricing = [
     price: "₹ 650",
     note: "Entry For all three events",
     featured: true,
-    bullets: ["AI PRADARSHA", "AI SANKALP", "AI MAHAYUDH","COMPLEMENTARY WORKING MEAL","SAVE UPTO 100RS","+ENtry to AI SAMVAD"]
+    bullets: ["AI PRADARSHA", "AI SANKALP", "AI MAHAYUDH","COMPLEMENTARY WORKING MEAL","SAVE UPTO 100RS","+Entry to AI SAMVAD"]
   },
   {
     title: "PER HEAD",
