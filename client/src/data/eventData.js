@@ -51,7 +51,7 @@ export const events = [
     kicker: "FLEX YOUR KNOWLEDGE",
     description:
       "AI Kreda is a fun and engaging segment designed to bring participants together through games and interactive activities. It provides an opportunity to relax, have fun and enjoy some friendly competition while connecting with fellow participants.",
-    accent: "white",
+    accent: "green",
     visual: "orbit"
   }
 ];
