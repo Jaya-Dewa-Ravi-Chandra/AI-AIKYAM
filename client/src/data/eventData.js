@@ -50,7 +50,7 @@ export const events = [
     short: "FUN MINI GAMES (ON SPOT REGISTRATION)",
     kicker: "FLEX YOUR KNOWLEDGE",
     description:
-      "AI Kreda is a fun and engaging segment designed to bring participants together through games and interactive activities. It provides an opportunity to relax, have fun and enjoy some friendly competition while connecting with fellow participants.",
+      "AI Kreeda is a fun and engaging segment designed to bring participants together through games and interactive activities. It provides an opportunity to relax, have fun and enjoy some friendly competition while connecting with fellow participants.",
     accent: "green",
     visual: "orbit"
   }
