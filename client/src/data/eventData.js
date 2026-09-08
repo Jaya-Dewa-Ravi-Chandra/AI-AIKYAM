@@ -8,7 +8,7 @@ export const events = [
     description:
       "AI Samvad brings together experts, innovators and AI enthusiasts for engaging discussions on the evolving world of Artificial Intelligence. The session encourages the exchange of ideas, perspectives and insights on how AI is shaping technology, industries and society.",
     accent: "violet",
-    visual: "signal"
+    visual: "orbit"
   },
   {
     id: "pradarsha",
@@ -30,7 +30,7 @@ export const events = [
     description:
       "AI Sankalp provides aspiring innovators with an opportunity to present their ideas and transform creative concepts into impactful solutions. Selected ideas will receive complete support, helping participants further develop and potentially bring their innovative ideas to life.",
     accent: "orange",
-    visual: "nodes"
+    visual: "orbit"
   },
   {
     id: "mahayudh",

@@ -564,6 +564,14 @@ textarea {
   --accent: #ff4d67;
 }
 
+.event-visual.green {
+  --accent: #c8ff00;
+}
+
+.event-visual.white {
+  --accent: #c8ff00;
+}
+
 .visual-noise {
   position: absolute;
   inset: 0;
