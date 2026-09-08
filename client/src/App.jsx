@@ -35,7 +35,7 @@ export default function App() {
         <section className="section countdown-section" id="countdown">
           <div className="countdown-copy">
             <h2>THE FUTURE<br /><em>IS WAITING.</em></h2>
-            <p>Two days. Four experiences. One celebration of artificial intelligence.</p>
+            <p>Two days. Five experiences. One celebration of artificial intelligence.</p>
           </div>
           <Countdown />
           <div className="date-lockup"><span>08</span><i>—</i><span>09</span><small>OCTOBER<br />2026</small></div>
@@ -44,7 +44,7 @@ export default function App() {
         <Speakers />
 
         <section id="events" className="events-intro">
-          <h2>FOUR WAYS<br /><em>TO THINK DIFFERENT.</em></h2>
+          <h2>FIVE WAYS<br /><em>TO THINK DIFFERENT.</em></h2>
         </section>
 
         {events.map((event, i) => <EventSection key={event.id} event={event} reverse={i % 2 === 1} />)}

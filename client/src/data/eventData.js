@@ -6,7 +6,7 @@ export const events = [
     short: "PANEL DISCUSSION",
     kicker: "CONVERSATIONS THAT SHAPE TOMORROW",
     description:
-      "A thought-provoking conversation bringing together experts, innovators, educators and students to explore the evolving landscape of Artificial Intelligence.",
+      "AI Samvad brings together experts, innovators and AI enthusiasts for engaging discussions on the evolving world of Artificial Intelligence. The session encourages the exchange of ideas, perspectives and insights on how AI is shaping technology, industries and society.",
     accent: "violet",
     visual: "signal"
   },
@@ -17,7 +17,7 @@ export const events = [
     short: "PROJECT EXPO",
     kicker: "WHERE IDEAS BECOME INNOVATION",
     description:
-      "A showcase of ambitious AI projects where students transform concepts into real-world solutions and demonstrate what intelligent technology can do.",
+      "AI Pradarsha provides a platform for participants to showcase innovative projects and explore practical applications of Artificial Intelligence. Exceptional and promising projects may also receive opportunities for patent and publication support from Anurag University, encouraging participants to take their innovations beyond the event.",
     accent: "cyan",
     visual: "orbit"
   },
@@ -28,7 +28,7 @@ export const events = [
     short: "IDEA PITCHING",
     kicker: "IMAGINATION MEETS POSSIBILITY",
     description:
-      "A platform for bold ideas. Participants pitch AI-driven concepts, communicate their vision and turn imagination into actionable possibilities.",
+      "AI Sankalp provides aspiring innovators with an opportunity to present their ideas and transform creative concepts into impactful solutions. Selected ideas will receive complete support, helping participants further develop and potentially bring their innovative ideas to life.",
     accent: "orange",
     visual: "nodes"
   },
@@ -39,8 +39,19 @@ export const events = [
     short: "THE GRAND CHALLENGE",
     kicker: "THINK. BUILD. CONQUER.",
     description:
-      "The ultimate test of creativity, technical ability and problem-solving — a high-intensity challenge built for teams ready to push their limits.",
+      "AI Mahayudh is an exciting competitive arena where participants put their model building skills to the test. With a live leaderboard adding to the thrill, teams compete, innovate and showcase their technical capabilities in an intense battle of AI models.",
     accent: "red",
+    visual: "orbit"
+  },
+  {
+    id: "kreeda",
+    number: "05",
+    name: "AI KREEDA",
+    short: "FUN MINI GAMES (ON SPOT REGISTRATION)",
+    kicker: "FLEX YOUR KNOWLEDGE",
+    description:
+      "AI Kreda is a fun and engaging segment designed to bring participants together through games and interactive activities. It provides an opportunity to relax, have fun and enjoy some friendly competition while connecting with fellow participants.",
+    accent: "white",
     visual: "orbit"
   }
 ];
