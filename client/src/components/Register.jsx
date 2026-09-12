@@ -174,20 +174,20 @@ export default function Register() {
           </p>
 
           <div className="fee-breakdown">
-            <span>
+            <div>
               <b>1 EVENT</b>
               ₹250
-            </span>
+            </div>
 
-            <span>
+            <div>
               <b>2 EVENTS</b>
               ₹500
-            </span>
+            </div>
 
-            <span>
+            <div>
               <b>3 EVENTS</b>
               ₹650
-            </span>
+            </div>
           </div>
         </div>
       </div>
