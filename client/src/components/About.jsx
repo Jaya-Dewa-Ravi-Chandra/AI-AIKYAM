@@ -28,7 +28,7 @@ export default function About() {
         </div>
         <div>
           <p className="coordinator-label">FACULTY COORDINATORS</p>
-          {coordinators.faculty.map((p) => <Person person={p} key={p.name + p.contact} />)}
+          {coordinators.faculty.map((p) => <Person person={p} key={p.name} />)}
         </div>
       </div>
       <div className="contact-strip">

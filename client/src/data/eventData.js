@@ -83,11 +83,11 @@ export const pricing = [
 
 export const coordinators = {
   students: [
-    { name: "STUDENT COORDINATOR", role: "Student Coordinator", contact: "+91 XXXXX XXXXX" },
-    { name: "STUDENT COORDINATOR", role: "Student Coordinator", contact: "+91 XXXXX XXXXX" }
+    { name: "Sriya", role: "Student Coordinator", contact: "+91 99896 10409" },
+    { name: "Jaitra", role: "Student Coordinator", contact: "+91 81256 22964" }
   ],
   faculty: [
-    { name: "FACULTY COORDINATOR", role: "Faculty Coordinator", contact: "+91 XXXXX XXXXX" },
-    { name: "FACULTY COORDINATOR", role: "Faculty Coordinator", contact: "+91 XXXXX XXXXX" }
+    { name: "Dr. M. Swathi", role: "Faculty Coordinator" },
+    { name: "Mr. Victor Daniel", role: "Faculty Coordinator" }
   ]
 };
