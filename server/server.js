@@ -143,12 +143,109 @@ async function initializeDatabase() {
       );
     `);
 
+    /* =========================
+       TEAMS TABLE
+    =========================
+       
+       Stores the team itself.
+
+       A team must have:
+       - unique team_id
+       - team name
+       - creation timestamp
+
+       The actual members are stored
+       separately in team_members.
+    */
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS teams (
+        id SERIAL PRIMARY KEY,
+
+        team_id VARCHAR(50)
+          UNIQUE NOT NULL,
+
+        team_name VARCHAR(150)
+          NOT NULL,
+
+        created_at TIMESTAMP
+          DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    /* =========================
+       TEAM MEMBERS TABLE
+    =========================
+
+       Every member is connected to an
+       existing registration.
+
+       UNIQUE(team_id, registration_id)
+       prevents the same person from
+       being added twice to one team.
+
+       UNIQUE(registration_id)
+       prevents one registration from
+       belonging to multiple teams.
+    */
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS team_members (
+        id SERIAL PRIMARY KEY,
+
+        team_id INTEGER
+          NOT NULL,
+
+        registration_id VARCHAR(50)
+          NOT NULL,
+
+        created_at TIMESTAMP
+          DEFAULT CURRENT_TIMESTAMP,
+
+        CONSTRAINT fk_team
+          FOREIGN KEY (team_id)
+          REFERENCES teams(id)
+          ON DELETE CASCADE,
+
+        CONSTRAINT fk_registration
+          FOREIGN KEY (registration_id)
+          REFERENCES registrations(registration_id)
+          ON DELETE CASCADE,
+
+        CONSTRAINT unique_team_member
+          UNIQUE (team_id, registration_id),
+
+        CONSTRAINT unique_registration_team
+          UNIQUE (registration_id)
+      );
+    `);
+
+    /* =========================
+       TEAM MEMBER COUNT INDEX
+    ========================= */
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS
+      idx_team_members_team_id
+      ON team_members(team_id);
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS
+      idx_team_members_registration_id
+      ON team_members(registration_id);
+    `);
+
     console.log(
       "PostgreSQL tables initialized successfully."
     );
 
     console.log(
       "Transaction ID support enabled."
+    );
+
+    console.log(
+      "Team registration support enabled."
     );
   } catch (error) {
     console.error(
@@ -171,6 +268,10 @@ app.get("/", (req, res) => {
   });
 });
 
+/* =========================
+   HEALTH CHECK
+========================= */
+
 app.get("/api/health", async (req, res) => {
   try {
     await pool.query("SELECT NOW()");
@@ -188,10 +289,18 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
+/* =========================
+   REGISTRATION ROUTES
+========================= */
+
 app.use(
   "/api/registrations",
   registrationRoutes(pool)
 );
+
+/* =========================
+   QUERY ROUTES
+========================= */
 
 app.use(
   "/api/queries",

@@ -1,5 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { ArrowRight, Check, CreditCard, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  CreditCard,
+  Loader2,
+  Users,
+} from "lucide-react";
 
 const EVENTS = [
   {
@@ -38,6 +44,20 @@ export default function Register() {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [registrationId, setRegistrationId] = useState("");
+
+  /* =========================
+     TEAM FORM
+  ========================= */
+
+  const [teamForm, setTeamForm] = useState({
+    teamName: "",
+    registrationId1: "",
+    registrationId2: "",
+    registrationId3: "",
+  });
+
+  const [teamStatus, setTeamStatus] = useState("");
+  const [teamError, setTeamError] = useState("");
 
   const amount = useMemo(() => {
     switch (form.events.length) {
@@ -79,6 +99,119 @@ export default function Register() {
     setError("");
     setStatus("");
   };
+
+  /* =========================
+     TEAM FORM HANDLERS
+  ========================= */
+
+  const handleTeamChange = (e) => {
+    const { name, value } = e.target;
+
+    setTeamForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+    setTeamError("");
+    setTeamStatus("");
+  };
+
+  const handleTeamSubmit = async (e) => {
+    e.preventDefault();
+
+    setTeamError("");
+    setTeamStatus("");
+
+    const teamName = teamForm.teamName.trim();
+
+    const registrationIds = [
+      teamForm.registrationId1.trim(),
+      teamForm.registrationId2.trim(),
+      teamForm.registrationId3.trim(),
+    ].filter(Boolean);
+
+    /* =========================
+       VALIDATION
+    ========================= */
+
+    if (!teamName) {
+      setTeamError("Please enter a team name.");
+      return;
+    }
+
+    if (registrationIds.length < 2) {
+      setTeamError(
+        "A team must contain at least 2 registration IDs."
+      );
+      return;
+    }
+
+    if (registrationIds.length > 3) {
+      setTeamError(
+        "A team can contain a maximum of 3 registration IDs."
+      );
+      return;
+    }
+
+    const uniqueIds = new Set(
+      registrationIds.map((id) => id.toUpperCase())
+    );
+
+    if (uniqueIds.size !== registrationIds.length) {
+      setTeamError(
+        "The same registration ID cannot be added twice."
+      );
+      return;
+    }
+
+    try {
+      setTeamStatus("Creating team...");
+
+      const response = await fetch(
+        `${API_URL}/api/registrations/teams`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            teamName,
+            registrationIds,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Unable to create team."
+        );
+      }
+
+      setTeamStatus(
+        `Team "${data.teamName || teamName}" created successfully.`
+      );
+
+      setTeamForm({
+        teamName: "",
+        registrationId1: "",
+        registrationId2: "",
+        registrationId3: "",
+      });
+    } catch (err) {
+      setTeamStatus("");
+
+      setTeamError(
+        err.message ||
+          "Something went wrong while creating the team."
+      );
+    }
+  };
+
+  /* =========================
+     REGISTRATION SUBMIT
+  ========================= */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,6 +268,7 @@ export default function Register() {
       }, 100);
     } catch (err) {
       setStatus("");
+
       setError(
         err.message ||
           "Something went wrong. Please try again."
@@ -197,7 +331,9 @@ export default function Register() {
           className="registration-form"
           onSubmit={handleSubmit}
         >
-          {/* PARTICIPANT DETAILS */}
+          {/* =========================
+              PARTICIPANT DETAILS
+          ========================= */}
 
           <div className="form-section-title">
             <span>01</span>
@@ -325,7 +461,9 @@ export default function Register() {
             </label>
           </div>
 
-          {/* EVENT SELECTION */}
+          {/* =========================
+              EVENT SELECTION
+          ========================= */}
 
           <div className="form-section-title">
             <span>02</span>
@@ -366,7 +504,9 @@ export default function Register() {
             })}
           </div>
 
-          {/* TOTAL */}
+          {/* =========================
+              TOTAL
+          ========================= */}
 
           <div className="registration-total">
             <div>
@@ -396,7 +536,9 @@ export default function Register() {
             </div>
           </div>
 
-          {/* DISCOUNT MESSAGE */}
+          {/* =========================
+              DISCOUNT MESSAGE
+          ========================= */}
 
           <div className="discount-note">
             {form.events.length === 0 && (
@@ -430,7 +572,9 @@ export default function Register() {
             )}
           </div>
 
-          {/* PAYMENT */}
+          {/* =========================
+              PAYMENT
+          ========================= */}
 
           <div
             className="payment-section"
@@ -509,7 +653,9 @@ export default function Register() {
             </div>
           </div>
 
-          {/* STATUS */}
+          {/* =========================
+              STATUS
+          ========================= */}
 
           {error && (
             <div className="form-error">
@@ -530,7 +676,9 @@ export default function Register() {
             </div>
           )}
 
-          {/* SUBMIT */}
+          {/* =========================
+              SUBMIT
+          ========================= */}
 
           <button
             type="submit"
@@ -563,6 +711,152 @@ export default function Register() {
             )}
           </button>
         </form>
+
+        {/* ==================================================
+            TEAM FORMATION
+            Separate from individual registration
+        ================================================== */}
+
+        <div className="team-formation-shell">
+          <div className="team-section-heading">
+            <div className="form-section-title">
+              <span>04</span>
+              TEAM FORMATION
+            </div>
+
+            <p>
+              Already registered? Form a team of
+              2 or 3 participants using their
+              registration IDs.
+            </p>
+          </div>
+
+          <form
+            className="team-formation-form"
+            onSubmit={handleTeamSubmit}
+          >
+            <div className="team-icon">
+              <Users size={20} />
+            </div>
+
+            <div className="team-form-grid">
+              <label>
+                <span>TEAM NAME *</span>
+
+                <input
+                  type="text"
+                  name="teamName"
+                  value={teamForm.teamName}
+                  onChange={handleTeamChange}
+                  placeholder="Enter team name"
+                  maxLength="100"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>
+                  REGISTRATION ID 01 *
+                </span>
+
+                <input
+                  type="text"
+                  name="registrationId1"
+                  value={
+                    teamForm.registrationId1
+                  }
+                  onChange={handleTeamChange}
+                  placeholder="e.g. AIK-2026-001"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>
+                  REGISTRATION ID 02 *
+                </span>
+
+                <input
+                  type="text"
+                  name="registrationId2"
+                  value={
+                    teamForm.registrationId2
+                  }
+                  onChange={handleTeamChange}
+                  placeholder="e.g. AIK-2026-002"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>
+                  REGISTRATION ID 03
+                  <small> OPTIONAL</small>
+                </span>
+
+                <input
+                  type="text"
+                  name="registrationId3"
+                  value={
+                    teamForm.registrationId3
+                  }
+                  onChange={handleTeamChange}
+                  placeholder="Optional third member"
+                />
+              </label>
+            </div>
+
+            <div className="team-form-note">
+              <span>TEAM SIZE: 2–3 MEMBERS</span>
+              <span>
+                Use the registration IDs generated
+                after individual registration.
+              </span>
+            </div>
+
+            {teamError && (
+              <div className="form-error">
+                {teamError}
+              </div>
+            )}
+
+            {teamStatus && (
+              <div className="form-success">
+                {teamStatus}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="registration-submit team-submit"
+              disabled={
+                teamStatus === "Creating team..."
+              }
+            >
+              {teamStatus ===
+              "Creating team..." ? (
+                <>
+                  <span>
+                    CREATING TEAM
+                  </span>
+
+                  <Loader2
+                    size={17}
+                    className="spin"
+                  />
+                </>
+              ) : (
+                <>
+                  <span>
+                    CREATE TEAM
+                  </span>
+
+                  <Users size={17} />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   );
