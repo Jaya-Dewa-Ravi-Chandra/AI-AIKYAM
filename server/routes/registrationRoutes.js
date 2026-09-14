@@ -357,6 +357,7 @@ export default function registrationRoutes(pool) {
 
      {
        "teamName": "Team Alpha",
+       "event": "AI PRADARSHA",
        "registrationIds": [
          "AAIK-12345678",
          "AAIK-87654321"
@@ -371,6 +372,103 @@ export default function registrationRoutes(pool) {
      A registration can belong to ONLY ONE team.
   ========================================================= */
 
+  /* =========================================================
+     VALIDATE TEAM MEMBERS FOR EVENT
+
+     POST /api/registrations/teams/validate
+
+     Checks that every supplied registration ID exists and
+     is registered for the selected event.
+  ========================================================= */
+
+  router.post("/teams/validate", async (req, res) => {
+    try {
+      const { event, registrationIds } = req.body;
+
+      if (
+        !event ||
+        typeof event !== "string" ||
+        !ALLOWED_EVENTS.includes(event)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Please select a valid event.",
+        });
+      }
+
+      if (!Array.isArray(registrationIds) || registrationIds.length < 2 || registrationIds.length > 3) {
+        return res.status(400).json({
+          success: false,
+          message: "Please provide 2 or 3 registration IDs.",
+        });
+      }
+
+      const cleanedIds = registrationIds.map((id) =>
+        String(id).trim().toUpperCase()
+      );
+      const uniqueIds = [...new Set(cleanedIds)];
+
+      if (uniqueIds.length !== cleanedIds.length) {
+        return res.status(400).json({
+          success: false,
+          message: "A registration ID cannot be repeated in the same team.",
+        });
+      }
+
+      const result = await pool.query(
+        `
+        SELECT registration_id, name, events
+        FROM registrations
+        WHERE registration_id = ANY($1::varchar[])
+        `,
+        [uniqueIds]
+      );
+
+      const foundIds = result.rows.map((row) =>
+        row.registration_id.toUpperCase()
+      );
+
+      const missingIds = uniqueIds.filter((id) => !foundIds.includes(id));
+
+      if (missingIds.length > 0) {
+        return res.status(404).json({
+          success: false,
+          message: "One or more registration IDs were not found.",
+          missingRegistrationIds: missingIds,
+        });
+      }
+
+      const invalidMembers = result.rows.filter(
+        (row) => !Array.isArray(row.events) || !row.events.includes(event)
+      );
+
+      if (invalidMembers.length > 0) {
+        return res.status(409).json({
+          success: false,
+          message: "One or more participants are not registered for the selected event.",
+          event,
+          invalidRegistrationIds: invalidMembers.map(
+            (row) => row.registration_id
+          ),
+        });
+      }
+
+      return res.json({
+        success: true,
+        event,
+        registrationIds: uniqueIds,
+        message: "All participants are registered for the selected event.",
+      });
+    } catch (error) {
+      console.error("Team validation error:", error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Unable to validate team participants.",
+      });
+    }
+  });
+
   router.post("/teams", async (req, res) => {
 
     const client = await pool.connect();
@@ -379,8 +477,26 @@ export default function registrationRoutes(pool) {
 
       const {
         teamName,
+        event,
         registrationIds,
       } = req.body;
+
+      /* =========================
+         TEAM EVENT
+      ========================= */
+
+      if (
+        !event ||
+        typeof event !== "string" ||
+        !ALLOWED_EVENTS.includes(event)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Please select a valid event for the team.",
+        });
+      }
+
+      const cleanedEvent = event.trim();
 
       /* =========================
          TEAM NAME
@@ -543,6 +659,29 @@ export default function registrationRoutes(pool) {
       }
 
       /* =====================================================
+         CHECK MEMBERS ARE REGISTERED FOR THIS EVENT
+      ===================================================== */
+
+      const notRegisteredForEvent =
+        registrations.rows.filter(
+          (row) => !Array.isArray(row.events) || !row.events.includes(cleanedEvent)
+        );
+
+      if (notRegisteredForEvent.length > 0) {
+        await client.query("ROLLBACK");
+
+        return res.status(409).json({
+          success: false,
+          message:
+            "One or more participants are not registered for the selected event.",
+          event: cleanedEvent,
+          invalidRegistrationIds: notRegisteredForEvent.map(
+            (row) => row.registration_id
+          ),
+        });
+      }
+
+      /* =====================================================
          CHECK WHETHER ANY MEMBER IS ALREADY IN A TEAM
 
          THIS IS THE IMPORTANT PART.
@@ -671,21 +810,25 @@ export default function registrationRoutes(pool) {
           `
           INSERT INTO teams (
             team_id,
-            team_name
+            team_name,
+            event
           )
           VALUES (
             $1,
-            $2
+            $2,
+            $3
           )
           RETURNING
             id,
             team_id,
             team_name,
+            event,
             created_at
           `,
           [
             teamId,
             cleanedTeamName,
+            cleanedEvent,
           ]
         );
 
@@ -740,6 +883,9 @@ export default function registrationRoutes(pool) {
 
           teamName:
             team.team_name,
+
+          event:
+            team.event,
 
           registrationIds:
             uniqueIds,
@@ -835,6 +981,7 @@ export default function registrationRoutes(pool) {
             t.id,
             t.team_id,
             t.team_name,
+            t.event,
             t.created_at,
 
             COALESCE(
@@ -897,6 +1044,7 @@ export default function registrationRoutes(pool) {
             t.id,
             t.team_id,
             t.team_name,
+            t.event,
             t.created_at
 
           ORDER BY
@@ -947,6 +1095,7 @@ export default function registrationRoutes(pool) {
               t.id,
               t.team_id,
               t.team_name,
+              t.event,
               t.created_at,
 
               COALESCE(
@@ -1012,6 +1161,7 @@ export default function registrationRoutes(pool) {
               t.id,
               t.team_id,
               t.team_name,
+              t.event,
               t.created_at
             `,
             [id]

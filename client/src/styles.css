@@ -1947,3 +1947,52 @@ textarea {
   }
 
 }
+
+/* =========================================================
+   TEAM EVENT SELECTOR
+========================================================= */
+
+.team-event-selector {
+  display: grid;
+  gap: 8px;
+}
+
+.team-event-selector label {
+  display: grid;
+  gap: 8px;
+}
+
+.team-event-selector label > span {
+  font: 10px "DM Mono", monospace;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.team-event-selector select {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  outline: 0;
+  background: var(--panel2);
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.team-event-selector select:focus {
+  border-color: var(--accent);
+}
+
+.team-event-selector p {
+  margin: 0;
+  color: #666;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .team-event-selector select {
+    min-height: 46px;
+  }
+}

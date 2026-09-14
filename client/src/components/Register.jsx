@@ -51,6 +51,7 @@ export default function Register() {
 
   const [teamForm, setTeamForm] = useState({
     teamName: "",
+    event: "",
     registrationId1: "",
     registrationId2: "",
     registrationId3: "",
@@ -139,6 +140,11 @@ export default function Register() {
       return;
     }
 
+    if (!teamForm.event) {
+      setTeamError("Please select the event for this team.");
+      return;
+    }
+
     if (registrationIds.length < 2) {
       setTeamError(
         "A team must contain at least 2 registration IDs."
@@ -165,7 +171,33 @@ export default function Register() {
     }
 
     try {
-      setTeamStatus("Creating team...");
+      setTeamStatus("Checking participants...");
+
+      /* Check that every participant is registered for the selected event. */
+      const validationResponse = await fetch(
+        `${API_URL}/api/registrations/teams/validate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            event: teamForm.event,
+            registrationIds,
+          }),
+        }
+      );
+
+      const validationData = await validationResponse.json();
+
+      if (!validationResponse.ok) {
+        throw new Error(
+          validationData.message ||
+            "One or more participants are not registered for this event."
+        );
+      }
+
+      setTeamStatus("Participants verified. Creating team...");
 
       const response = await fetch(
         `${API_URL}/api/registrations/teams`,
@@ -176,6 +208,7 @@ export default function Register() {
           },
           body: JSON.stringify({
             teamName,
+            event: teamForm.event,
             registrationIds,
           }),
         }
@@ -190,11 +223,12 @@ export default function Register() {
       }
 
       setTeamStatus(
-        `Team "${data.teamName || teamName}" created successfully.`
+        `Team "${data.teamName || teamName}" created successfully for ${data.event || teamForm.event}.`
       );
 
       setTeamForm({
         teamName: "",
+        event: "",
         registrationId1: "",
         registrationId2: "",
         registrationId3: "",
@@ -739,6 +773,26 @@ export default function Register() {
               <Users size={20} />
             </div>
 
+            <div className="team-event-selector">
+              <label>
+                <span>EVENT FOR TEAM *</span>
+                <select
+                  name="event"
+                  value={teamForm.event}
+                  onChange={handleTeamChange}
+                  required
+                >
+                  <option value="">Select event</option>
+                  {EVENTS.map((event) => (
+                    <option key={event.id} value={event.id}>
+                      {event.name} — {event.description}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p>All team members must have an individual registration for the selected event.</p>
+            </div>
+
             <div className="team-form-grid">
               <label>
                 <span>TEAM NAME *</span>
@@ -830,11 +884,12 @@ export default function Register() {
               type="submit"
               className="registration-submit team-submit"
               disabled={
-                teamStatus === "Creating team..."
+                teamStatus === "Checking participants..." ||
+                teamStatus === "Participants verified. Creating team..."
               }
             >
-              {teamStatus ===
-              "Creating team..." ? (
+              {teamStatus === "Checking participants..." ||
+              teamStatus === "Participants verified. Creating team..." ? (
                 <>
                   <span>
                     CREATING TEAM

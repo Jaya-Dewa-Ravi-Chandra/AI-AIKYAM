@@ -168,9 +168,20 @@ async function initializeDatabase() {
         team_name VARCHAR(150)
           NOT NULL,
 
+        event VARCHAR(50),
+
         created_at TIMESTAMP
           DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+
+    /* =========================
+       ADD EVENT TO EXISTING TEAMS
+    ========================= */
+
+    await pool.query(`
+      ALTER TABLE teams
+      ADD COLUMN IF NOT EXISTS event VARCHAR(50);
     `);
 
     /* =========================
