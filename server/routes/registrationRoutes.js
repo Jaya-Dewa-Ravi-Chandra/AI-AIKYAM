@@ -349,6 +349,88 @@ export default function registrationRoutes(pool) {
 
 
   /* =========================================================
+     REGISTRATION ID LOOKUP
+
+     POST /api/registrations/lookup
+
+     Attendees can recover their Registration ID using the
+     email address and phone number used during registration.
+  ========================================================= */
+
+  router.post("/lookup", async (req, res) => {
+    try {
+      const email =
+        typeof req.body?.email === "string"
+          ? req.body.email.trim().toLowerCase()
+          : "";
+
+      const phone =
+        typeof req.body?.phone === "string" ||
+        typeof req.body?.phone === "number"
+          ? String(req.body.phone).replace(/\D/g, "")
+          : "";
+
+      const emailRegex =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: "Please enter a valid email address.",
+        });
+      }
+
+      if (phone.length !== 10) {
+        return res.status(400).json({
+          success: false,
+          message: "Please enter a valid 10-digit phone number.",
+        });
+      }
+
+      const result = await pool.query(
+        `
+        SELECT
+          registration_id,
+          name,
+          events
+        FROM registrations
+        WHERE LOWER(email) = $1
+          AND phone = $2
+        LIMIT 1
+        `,
+        [email, phone]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "No registration was found with those details. Please check your email and phone number.",
+        });
+      }
+
+      const registration = result.rows[0];
+
+      return res.json({
+        success: true,
+        registration: {
+          registrationId: registration.registration_id,
+          name: registration.name,
+          events: registration.events,
+        },
+      });
+    } catch (error) {
+      console.error("Registration ID lookup error:", error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Unable to find your registration. Please try again.",
+      });
+    }
+  });
+
+
+  /* =========================================================
      CREATE TEAM
 
      POST /api/registrations/teams

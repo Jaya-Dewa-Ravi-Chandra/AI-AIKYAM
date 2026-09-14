@@ -46,6 +46,19 @@ export default function Register() {
   const [registrationId, setRegistrationId] = useState("");
 
   /* =========================
+     REGISTRATION ID LOOKUP
+  ========================= */
+
+  const [lookupForm, setLookupForm] = useState({
+    email: "",
+    phone: "",
+  });
+
+  const [lookupResult, setLookupResult] = useState(null);
+  const [lookupStatus, setLookupStatus] = useState("");
+  const [lookupError, setLookupError] = useState("");
+
+  /* =========================
      TEAM FORM
   ========================= */
 
@@ -99,6 +112,78 @@ export default function Register() {
 
     setError("");
     setStatus("");
+  };
+
+  /* =========================
+     REGISTRATION ID LOOKUP HANDLER
+  ========================= */
+
+  const handleLookupChange = (e) => {
+    const { name, value } = e.target;
+
+    setLookupForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+    setLookupError("");
+    setLookupStatus("");
+    setLookupResult(null);
+  };
+
+  const handleLookupSubmit = async (e) => {
+    e.preventDefault();
+
+    setLookupError("");
+    setLookupStatus("");
+    setLookupResult(null);
+
+    const email = lookupForm.email.trim().toLowerCase();
+    const phone = lookupForm.phone.replace(/\D/g, "");
+
+    if (!email) {
+      setLookupError("Please enter the email used during registration.");
+      return;
+    }
+
+    if (phone.length !== 10) {
+      setLookupError("Please enter the same 10-digit phone number used during registration.");
+      return;
+    }
+
+    try {
+      setLookupStatus("Searching...");
+
+      const response = await fetch(
+        `${API_URL}/api/registrations/lookup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            phone,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "No registration was found with those details."
+        );
+      }
+
+      setLookupResult(data.registration);
+      setLookupStatus("Registration found successfully.");
+    } catch (err) {
+      setLookupStatus("");
+      setLookupError(
+        err.message || "Unable to find your registration. Please try again."
+      );
+    }
   };
 
   /* =========================
@@ -747,6 +832,116 @@ export default function Register() {
         </form>
 
         {/* ==================================================
+            REGISTRATION ID LOOKUP
+            Helps attendees recover their ID after registration
+        ================================================== */}
+
+        <div className="registration-lookup-shell">
+          <div className="registration-lookup-heading">
+            <div className="form-section-title">
+              <span>04</span>
+              FIND YOUR REGISTRATION ID
+            </div>
+
+            <p>
+              Forgot to note down your Registration ID? Enter the same
+              email address and phone number used during registration.
+            </p>
+          </div>
+
+          <form
+            className="registration-lookup-form"
+            onSubmit={handleLookupSubmit}
+          >
+            <div className="registration-lookup-grid">
+              <label>
+                <span>EMAIL ID *</span>
+                <input
+                  type="email"
+                  name="email"
+                  value={lookupForm.email}
+                  onChange={handleLookupChange}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>PHONE NUMBER *</span>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={lookupForm.phone}
+                  onChange={handleLookupChange}
+                  placeholder="10-digit mobile number"
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  maxLength="10"
+                  autoComplete="tel"
+                  required
+                />
+              </label>
+            </div>
+
+            {lookupError && (
+              <div className="form-error">
+                {lookupError}
+              </div>
+            )}
+
+            {lookupStatus && (
+              <div className="form-success">
+                {lookupStatus}
+              </div>
+            )}
+
+            {lookupResult && (
+              <div className="registration-lookup-result">
+                <div>
+                  <span>REGISTRATION ID</span>
+                  <strong>{lookupResult.registrationId}</strong>
+                </div>
+
+                <div className="lookup-result-details">
+                  <p>
+                    <span>NAME</span>
+                    <strong>{lookupResult.name}</strong>
+                  </p>
+
+                  <p>
+                    <span>REGISTERED EVENTS</span>
+                    <strong>
+                      {Array.isArray(lookupResult.events)
+                        ? lookupResult.events.join(" • ")
+                        : "—"}
+                    </strong>
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="registration-submit lookup-submit"
+              disabled={lookupStatus === "Searching..."}
+            >
+              {lookupStatus === "Searching..." ? (
+                <>
+                  <span>SEARCHING</span>
+                  <Loader2 size={17} className="spin" />
+                </>
+              ) : (
+                <>
+                  <span>FIND REGISTRATION ID</span>
+                  <ArrowRight size={17} />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* ==================================================
             TEAM FORMATION
             Separate from individual registration
         ================================================== */}
@@ -754,7 +949,7 @@ export default function Register() {
         <div className="team-formation-shell">
           <div className="team-section-heading">
             <div className="form-section-title">
-              <span>04</span>
+              <span>05</span>
               TEAM FORMATION
             </div>
 
