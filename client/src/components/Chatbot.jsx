@@ -1,18 +1,29 @@
 import React, { useState } from "react";
-import { Bot, X, Send, CheckCircle2 } from "lucide-react";
+import {
+  Bot,
+  X,
+  Send,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
 
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const api =
     import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   async function submit(e) {
     e.preventDefault();
+
+    if (submitting) return;
+
     setStatus("");
+    setSubmitting(true);
 
     try {
       const res = await fetch(`${api}/api/queries`, {
@@ -44,6 +55,8 @@ export default function Chatbot() {
       setStatus(
         "Could not send right now. Please try again."
       );
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -76,6 +89,7 @@ export default function Chatbot() {
             <button
               onClick={() => setOpen(false)}
               aria-label="Close"
+              disabled={submitting}
             >
               <X size={18} />
             </button>
@@ -101,6 +115,7 @@ export default function Chatbot() {
               onChange={(e) =>
                 setEmail(e.target.value)
               }
+              disabled={submitting}
             />
 
             <textarea
@@ -111,11 +126,27 @@ export default function Chatbot() {
               onChange={(e) =>
                 setQuery(e.target.value)
               }
+              disabled={submitting}
             />
 
-            <button type="submit">
-              SEND QUERY
-              <Send size={15} />
+            <button
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting ? (
+                <>
+                  SUBMITTING
+                  <Loader2
+                    size={15}
+                    className="spin"
+                  />
+                </>
+              ) : (
+                <>
+                  SEND QUERY
+                  <Send size={15} />
+                </>
+              )}
             </button>
           </form>
 

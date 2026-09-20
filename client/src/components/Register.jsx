@@ -343,12 +343,15 @@ export default function Register() {
       setError("Please select at least one event.");
       return;
     }
+const transactionId =
+  form.transactionId.trim();
 
-    if (!form.transactionId.trim()) {
-      setError("Please enter your UPI transaction ID / UTR.");
-      return;
-    }
-
+if (!/^\d{12}$/.test(transactionId)) {
+  setError(
+    "UPI Transaction ID / UTR must be exactly 12 digits."
+  );
+  return;
+}
     try {
       setStatus("Submitting registration...");
 
@@ -754,13 +757,17 @@ export default function Register() {
                   </span>
 
                   <input
-                    type="text"
-                    name="transactionId"
-                    value={form.transactionId}
-                    onChange={handleChange}
-                    placeholder="Enter your UPI transaction ID / UTR"
-                    required
-                  />
+  type="text"
+  name="transactionId"
+  value={form.transactionId}
+  onChange={handleChange}
+  placeholder="Enter 12-digit UTR"
+  inputMode="numeric"
+  pattern="[0-9]{12}"
+  maxLength={12}
+  minLength={12}
+  required
+/>
                 </label>
 
                 <p>

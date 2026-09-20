@@ -182,24 +182,22 @@ export default function registrationRoutes(pool) {
         });
       }
 
-      /* =========================
-         TRANSACTION ID
-      ========================= */
+/* =========================
+   TRANSACTION ID / UTR
+========================= */
 
-      if (
-        !transactionId ||
-        transactionId.trim().length < 5
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Please enter a valid UPI transaction ID / UTR.",
-        });
-      }
+const cleanedTransactionId =
+  typeof transactionId === "string"
+    ? transactionId.trim()
+    : "";
 
-      const cleanedTransactionId =
-        transactionId.trim();
-
+if (!/^\d{12}$/.test(cleanedTransactionId)) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "UPI Transaction ID / UTR must be exactly 12 digits.",
+  });
+}
       /* =========================
          DUPLICATE TRANSACTION
       ========================= */
