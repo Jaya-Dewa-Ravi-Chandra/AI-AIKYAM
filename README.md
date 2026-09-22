@@ -33,30 +33,6 @@ cp .env.example .env
 npm run dev
 ```
 
-### Client
-```bash
-cd client
-npm install
-npm run dev
-```
-
-The client runs on `http://localhost:5173`.
-
-## Environment
-
-Server `.env`:
-```env
-PORT=5000
-MONGODB_URI=mongodb+srv://YOUR_USER:YOUR_PASSWORD@YOUR_CLUSTER.mongodb.net/ai_aikyam
-CLIENT_URL=http://localhost:5173
-```
-
-Client `.env`:
-```env
-VITE_API_URL=http://localhost:5000/api
-VITE_GOOGLE_FORM_URL=https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?embedded=true
-```
-
 ## Customization
 Most event content is in `client/src/data/eventData.js`.
 
