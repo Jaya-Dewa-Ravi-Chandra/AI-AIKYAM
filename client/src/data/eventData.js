@@ -57,10 +57,9 @@ export const events = [
 ];
 
 export const speakers = [
-  { name: "SPEAKER ONE", role: "Industry Expert", org: "Coming Soon", initials: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMoVVDevkIotZUiNn8VDIARJs2Djip1ks4ige7NqLr-A&s=10" },
-  { name: "SPEAKER TWO", role: "Industry Expert", org: "Coming Soon", initials: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMoVVDevkIotZUiNn8VDIARJs2Djip1ks4ige7NqLr-A&s=10" },
-  { name: "SPEAKER THREE", role: "Industry Expert", org: "Coming Soon", initials: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMoVVDevkIotZUiNn8VDIARJs2Djip1ks4ige7NqLr-A&s=10" },
-  { name: "SPEAKER FOUR", role: "Industry Expert", org: "Coming Soon", initials: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMoVVDevkIotZUiNn8VDIARJs2Djip1ks4ige7NqLr-A&s=10" }
+  { name: "Pradeep Bansal", role: "AI Engineer", initials: "https://drive.google.com/file/d/1VxMkOapwqVvHNBXWndzTiAddB8QWb6PY/view?usp=drive_link" },
+  { name: "Nikeelu Gunda", role: "AI Trainer", initials: "https://drive.google.com/file/d/156dx1LWGrtVmBUPSpEl5ac-bwq6s_q6v/view?usp=drive_link" },
+  { name: "Vinay Kumar", role: "AI Specialised Manager", initials: "https://drive.google.com/file/d/1Dofc03fK7J3mQZIVRTRb2VZ1TxyjWdvF/view?usp=drive_link"}
 ];
 
 export const pricing = [

@@ -374,8 +374,10 @@ textarea {
   overflow-x: auto;
   padding-bottom: 15px;
   scrollbar-width: none;
-}
 
+  cursor: grab;
+  user-select: none;
+}
 .speaker-track::-webkit-scrollbar {
   display: none;
 }
