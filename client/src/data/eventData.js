@@ -57,9 +57,24 @@ export const events = [
 ];
 
 export const speakers = [
-  { name: "Pradeep Bansal", role: "AI Engineer", initials: "https://drive.google.com/uc?export=view&id=1VxMkOapwqVvHNBXWndzTiAddB8QWb6PY" },
-  { name: "Nikeelu Gunda", role: "AI Trainer", initials: "https://drive.google.com/uc?export=view&id=156dx1LWGrtVmBUPSpEl5ac-bwq6s_q6v" },
-  { name: "Vinay Kumar", role: "AI Specialised Manager", initials: "https://drive.google.com/uc?export=view&id=1Dofc03fK7J3mQZIVRTRb2VZ1TxyjWdvF" }
+  {
+    name: "Pradeep Bansal",
+    role: "AI Engineer",
+    initials:
+      "https://drive.google.com/thumbnail?id=1VxMkOapwqVvHNBXWndzTiAddB8QWb6PY&sz=w1000"
+  },
+  {
+    name: "Nikeelu Gunda",
+    role: "AI Trainer",
+    initials:
+      "https://drive.google.com/thumbnail?id=156dx1LWGrtVmBUPSpEl5ac-bwq6s_q6v&sz=w1000"
+  },
+  {
+    name: "Vinay Kumar",
+    role: "AI Specialised Manager",
+    initials:
+      "https://drive.google.com/thumbnail?id=1Dofc03fK7J3mQZIVRTRb2VZ1TxyjWdvF&sz=w1000"
+  }
 ];
 
 export const pricing = [
